@@ -73,25 +73,23 @@ function sign_in(access_token, remarks) {
       )
 
       if (rewards.length) {
-        if (isMonthOfLastDay()) {
-          for await (reward of rewards) {
-            const signInDay = reward.day
-            try {
-              const rewardInfo = await getReward(access_token, signInDay)
-              sendMessage.push(
-                `第${signInDay}天奖励领取成功: 获得${rewardInfo.name || ''}${rewardInfo.description || ''
-                }`
-              )
-            } catch (e) {
-              sendMessage.push(`第${signInDay}天奖励领取失败:`, e)
-            }
+        for await (reward of rewards) {
+          const signInDay = reward.day
+          try {
+            const rewardInfo = await getReward(access_token, signInDay)
+            sendMessage.push(
+              `第${signInDay}天奖励领取成功: 获得${rewardInfo.name || ''}${
+                rewardInfo.description || ''
+              }`
+            )
+          } catch (e) {
+            sendMessage.push(`第${signInDay}天奖励领取失败:`, e)
           }
-        } else {
-          sendMessage.push(`今天不是本月最后一天，不领取奖励`);
         }
       } else if (currentSignInfo.isReward) {
         sendMessage.push(
-          `今日签到获得${currentSignInfo.reward.name || ''}${currentSignInfo.reward.description || ''
+          `今日签到获得${currentSignInfo.reward.name || ''}${
+            currentSignInfo.reward.description || ''
           }`
         )
       }
@@ -103,29 +101,6 @@ function sign_in(access_token, remarks) {
       sendMessage.push(e.message)
       return Promise.reject(sendMessage.join(', '))
     })
-}
-
-function isMonthOfLastDay() {
-  // 当天
-  var today = new Date();
-  var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-  console.log('date------------', date);
-
-  // 最后一天
-  var endDate = new Date(today);
-  endDate.setMonth(endDate.getMonth() + 1);
-  endDate.setDate(0);
-  var endDateStr = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate();
-  console.log('endDateStr------------', endDateStr);
-
-
-  if (date === endDateStr) {
-    console.log('------------true');
-    return true;
-  } else {
-    console.log('------------false');
-    return false;
-  }
 }
 
 // 领取奖励
@@ -153,12 +128,12 @@ async function getRefreshToken() {
   let instance = null
   try {
     instance = await initInstance()
-  } catch (e) { }
+  } catch (e) {}
 
   let refreshToken = process.env.refreshToken || []
   try {
     if (instance) refreshToken = await getEnv(instance, 'refreshToken')
-  } catch (e) { }
+  } catch (e) {}
 
   let refreshTokenArray = []
 
